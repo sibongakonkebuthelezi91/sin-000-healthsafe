@@ -16,7 +16,7 @@ public class IngestionServiceApp {
         Javalin app = Javalin.create().start(7030);
 
         app.get("/health", ctx -> ctx.result("OK"));
-
+        System.out.println(readCsv("wards-outdated.csv").get(0));
         // TODO: read and clean src/main/resources/wards-outdated.csv (wards, wings, specialist departments data —
         // trim whitespace, fix casing, normalize dates/booleans) and expose the
         // cleaned records here for the other services to consume.
