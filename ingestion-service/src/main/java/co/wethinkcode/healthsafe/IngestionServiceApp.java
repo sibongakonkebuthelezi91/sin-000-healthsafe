@@ -16,7 +16,7 @@ public class IngestionServiceApp {
         try(BufferedReader br = Files.newBufferedReader(Paths.get(fileName))){
             String line;
             while((line = br.readLine()) != null){
-
+                String[] data = line.split(",");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
