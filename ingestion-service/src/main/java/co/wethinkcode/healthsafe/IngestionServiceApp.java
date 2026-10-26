@@ -13,7 +13,7 @@ public class IngestionServiceApp {
         Javalin app = Javalin.create().start(7030);
 
         app.get("/health", ctx -> ctx.result("OK"));
-        System.out.println(readCsv().get(0));
+        System.out.println(readCsv());
         // TODO: read and clean src/main/resources/wards-outdated.csv (wards, wings, specialist departments data —
         // trim whitespace, fix casing, normalize dates/booleans) and expose the
         // cleaned records here for the other services to consume.
@@ -21,6 +21,10 @@ public class IngestionServiceApp {
 
     private static List<String[]> readCsv(){
         InputStream inputData = IngestionServiceApp.class.getClassLoader().getResourceAsStream("wards-outdated.csv");
+        if(inputData != null) {
+            System.out.println("File not found");
+            return null;
+        }
         try(CSVReader readData = new CSVReader(new InputStreamReader(inputData))){
             List<String[]> data = readData.readAll();
             for(String[] dart: data){
