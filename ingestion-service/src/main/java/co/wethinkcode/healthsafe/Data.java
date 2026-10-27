@@ -28,19 +28,30 @@ public class Data {
 
     private static List<Map<String, String>> dataCleaner(List<String[]> data){
         List<Map<String, String>> json = new ArrayList<>();
+        List<String> visited = new ArrayList<>();
         String[] keys = data.get(0);
         data.remove(0);
         for(String[] dart: data){
-            Map<String, String> map = new HashMap<>();
-            for(int x = 0; dart.length > x;x++){
-                String cleaned = dart[x].toLowerCase().trim();
-                String value = cleaned.isEmpty()? null : cleaned;
-                map.put(keys[x].toLowerCase().trim(), value);
+            Map<String, String> map = mapping(keys, dart);
+            if(visited.contains(map.get("ward_id"))){
+                continue;
             }
-            String availableBeds = map.get("beds_available");
-            if(availableBeds.matches("[a-zA-Z]+") || availableBeds.equals("n/a") ) map.put("beds_available", null);
             json.add(map);
+            visited.add(map.get("ward_id"));
         }
+
         return json;
+    }
+
+    private static Map<String, String> mapping(String[] keys, String[] values){
+        Map<String, String> map = new HashMap<>();
+        for(int x = 0; values.length > x;x++){
+            String cleaned = values[x].toLowerCase().trim();
+            String value = cleaned.isEmpty()? null : cleaned;
+            map.put(keys[x].toLowerCase().trim(), value);
+        }
+        String availableBeds = map.get("beds_available");
+        if(availableBeds.matches("[a-zA-Z]+") || availableBeds.equals("n/a") ) map.put("beds_available", null);
+        return map;
     }
 }
