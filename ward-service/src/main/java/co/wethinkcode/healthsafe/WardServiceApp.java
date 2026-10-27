@@ -8,6 +8,7 @@ public class WardServiceApp {
         Javalin app = Javalin.create().start(7031);
 
         app.get("/health", ctx -> ctx.result("OK"));
+        app.get("/ward/{id}", ctx -> ctx.result("OK"));
         DataRetrieval.getData();
         // TODO (Provides lists of wards and departments.)
         // Add domain endpoints for ward-service here.
