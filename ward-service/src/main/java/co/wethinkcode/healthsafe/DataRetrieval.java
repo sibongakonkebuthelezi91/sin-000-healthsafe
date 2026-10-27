@@ -2,8 +2,6 @@ package co.wethinkcode.healthsafe;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import io.javalin.http.Context;
 
 import java.io.IOException;
@@ -32,7 +30,7 @@ public class DataRetrieval {
         try {
             JsonNode[] allWards = json.readValue(data, JsonNode[].class);
             if (allWards == null) {
-                ctx.status(400).result("No data");
+                ctx.status(404).json("No data");
                 return;
             }
             String result = ctx.pathParam("id");
