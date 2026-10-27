@@ -1,4 +1,7 @@
 package co.wethinkcode.healthsafe;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import javax.naming.Context;
 import java.io.IOException;
 import java.net.URI;
@@ -21,6 +24,11 @@ public class DataRetrieval {
     }
 
     public static void wards(Context ctx){
-        JsonObject
+        Gson json = new Gson();
+        Map[] allWards = json.fromJson(DataRetrieval.getData(), Map[].class);
+
+        for(Map ward : allWards){
+            System.out.println(ward);
+        }
     }
 }
