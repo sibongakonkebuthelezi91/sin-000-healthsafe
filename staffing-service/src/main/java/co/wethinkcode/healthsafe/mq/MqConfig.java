@@ -24,18 +24,24 @@ public final class MqConfig {
     private MqConfig() {
     }
 
-    public static void connect(){
+    public static Session connect(){
         Connection connect;
         try {
             connect = CONNECTION_FACTORY.createConnection();
             connect.start();
-            session = connect.createSession(Session.AUTO_ACKNOWLEDGE);
+            return connect.createSession(Session.AUTO_ACKNOWLEDGE);
         } catch (JMSException e) {
-            System.out.println("Refused to connect");;
+            System.out.println("Refused to connect");
+            return null;
         }
     }
 
     public static void publishStaffEvents(String eventPayload){
+        session = connect();
+        if(session == null){
+            System.out.println("Session is null");
+            return;
+        }
         try{
             Destination destination = session.createTopic(MqConfig.TOPIC);
             try(MessageProducer producer = session.createProducer(destination)){
