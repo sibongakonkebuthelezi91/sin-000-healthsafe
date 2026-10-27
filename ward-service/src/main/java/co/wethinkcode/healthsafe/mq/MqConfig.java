@@ -1,5 +1,14 @@
 package co.wethinkcode.healthsafe.mq;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.command.ActiveMQQueue;
+
+import javax.jms.*;
+
 /**
  * Shared by every producer/consumer service that talks to the ActiveMQ broker.
  * Duplicated into each participating service's own source tree, since these are
@@ -13,7 +22,63 @@ public final class MqConfig {
     public static final String BROKER_URL = "tcp://localhost:61616";
     public static final String TOPIC = "staffing-events-topic";
     public static final String QUEUE = "equipment-failure-queue";
+    private static final ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(BROKER_URL);
+    private static final ObjectMapper jackson = new ObjectMapper();
+
+
+    private static Connection connection;
+    private static Session session;
+    private MessageProducer producer;
 
     private MqConfig() {
+    }
+
+    public static void connect(){
+        try{
+        connection = connectionFactory.createConnection();
+        connection.start();
+        session = connection.createSession(Session.AUTO_ACKNOWLEDGE);
+
+        } catch (JMSException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void subscribeTopic(){
+        try{
+        Destination destination = session.createTopic(MqConfig.TOPIC);
+       MessageConsumer consumer = session.createConsumer(destination);
+       consumer.setMessageListener(MqConfig::handleMessage);
+        } catch (JMSException e) {
+            System.out.println("Could not get message");
+        }
+    }
+
+    public static void publishEquipmentFailure(){
+        // sending to our broker when a system fails
+        try{
+            Destination destination = session.createQueue(MqConfig.QUEUE);
+            MessageProducer produce = session.createProducer(destination);
+            produce.setDeliveryMode(DeliveryMode.PERSISTENT);
+        } catch (JMSException e) {
+            System.out.println("Could not parse queue");
+        }
+    }
+
+    private static void handleMessage(Message message){
+        if(message instanceof TextMessage){
+            try{
+                String result = ((TextMessage) message).getText();
+                if(result == null || result.trim().isBlank()){
+                    System.out.println("Message is empty");
+                    return;
+                }
+                JsonNode json = MqConfig.jackson.readValue(result, JsonNode.class);
+            } catch (JMSException e) {
+                System.out.println("Could not get message");
+            } catch (JsonProcessingException e) {
+                System.out.println("Could not parse Json");
+            }
+        }
     }
 }
