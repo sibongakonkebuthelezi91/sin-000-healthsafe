@@ -1,8 +1,8 @@
 package co.wethinkcode.healthsafe;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.javalin.http.Context;
 
-import javax.naming.Context;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -26,7 +26,7 @@ public class DataRetrieval {
     public static void wards(Context ctx){
         Gson json = new Gson();
         Map[] allWards = json.fromJson(DataRetrieval.getData(), Map[].class);
-
+        String result = ctx.pathParam("id");
         for(Map ward : allWards){
             System.out.println(ward);
         }
