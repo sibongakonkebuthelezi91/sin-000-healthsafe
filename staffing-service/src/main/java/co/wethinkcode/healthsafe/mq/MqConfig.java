@@ -36,12 +36,15 @@ public final class MqConfig {
     }
 
     public static void publishStaffEvents(String eventPayload){
+
+
+
         try{
-        Destination destination = session.createTopic(MqConfig.TOPIC);
-        MessageProducer producer = session.createProducer(destination);
-        producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-        TextMessage message = session.createTextMessage(eventPayload);
-        producer.send(message);
+            Destination destination = session.createTopic(MqConfig.TOPIC);
+            MessageProducer producer = session.createProducer(destination);
+            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+            TextMessage message = session.createTextMessage(eventPayload);
+            producer.send(message);
         } catch (JMSException e) {
             System.out.println("Refused to publish");
         }
