@@ -14,9 +14,9 @@ public class DataRetrieval {
 
     public static String getData(){
         String url = "http://localhost:7030/wards";
-        try{HttpClient client = HttpClient.newHttpClient() ;
+        HttpClient client = HttpClient.newHttpClient() ;
             HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().build();
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+              try{HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 return response.body();
         }catch (IOException | InterruptedException e) {
             return null;
@@ -25,14 +25,20 @@ public class DataRetrieval {
 
     public static void wards(Context ctx){
         Gson json = new Gson();
-        JsonObject[] allWards = json.fromJson(DataRetrieval.getData(), JsonObject[].class);
+        String data = getData();
+        JsonObject[] allWards = json.fromJson(data, JsonObject[].class);
         if(allWards == null) {
-            System.out.println("No data");
+            ctx.status(400).result("No data");
             return;
         }
         String result = ctx.pathParam("id");
         for(JsonObject ward : allWards){
-            System.out.println(ward);
+            if(result.equalsIgnoreCase(ward.get("id").getAsString())){
+                ctx.status(200).json(ward);
+                return;
+            }
         }
+
+        ctx.status(400).result("No ward found");
     }
 }
