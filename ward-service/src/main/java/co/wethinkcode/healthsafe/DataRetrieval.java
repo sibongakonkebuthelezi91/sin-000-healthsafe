@@ -1,4 +1,7 @@
 package co.wethinkcode.healthsafe;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.javalin.http.Context;
@@ -24,21 +27,24 @@ public class DataRetrieval {
     }
 
     public static void wards(Context ctx){
-        Gson json = new Gson();
+        ObjectMapper json = new ObjectMapper();
         String data = getData();
-        JsonObject[] allWards = json.fromJson(data, JsonObject[].class);
-        if(allWards == null) {
-            ctx.status(400).result("No data");
-            return;
-        }
-        String result = ctx.pathParam("id");
-        for(JsonObject ward : allWards){
-            if(result.equalsIgnoreCase(ward.get("id").getAsString())){
-                ctx.status(200).json(ward);
+        try {
+            JsonNode[] allWards = json.readValue(data, JsonNode[].class);
+            if (allWards == null) {
+                ctx.status(400).result("No data");
                 return;
             }
+            String result = ctx.pathParam("id");
+            for (JsonNode ward : allWards) {
+                if (result.equalsIgnoreCase(ward.get("ward_id").asText())) {
+                    ctx.status(200).json(ward);
+                    return;
+                }
+            }
+            ctx.status(400).result("No ward found");
+        } catch (JsonProcessingException e) {
+            ctx.status(400).result(String.valueOf(e));
         }
-
-        ctx.status(400).result("No ward found");
     }
 }
