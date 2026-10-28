@@ -1,5 +1,6 @@
 package co.wethinkcode.healthsafe;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.http.Context;
@@ -12,6 +13,7 @@ import java.net.http.HttpResponse;
 import java.util.*;
 
 public class DataRetrieval {
+    public static ObjectMapper json = new ObjectMapper();
 
     public static String getData(){
         String url = "http://localhost:7030/wards";
@@ -24,8 +26,7 @@ public class DataRetrieval {
         }
     }
 
-    public static void wards(Context ctx){
-        ObjectMapper json = new ObjectMapper();
+    public static void ward(Context ctx){
         String data = getData();
         try {
             JsonNode[] allWards = json.readValue(data, JsonNode[].class);
@@ -43,6 +44,18 @@ public class DataRetrieval {
             ctx.status(400).result("No ward found");
         } catch (JsonProcessingException e) {
             ctx.status(400).result(String.valueOf(e));
+        }
+    }
+
+
+    public static void department(Context ctx){
+        String data = getData();
+        try{
+            JsonNode[] allDepartments = json.readValue(data, JsonNode[].class);
+            List<String> departments = new ArrayList<>();
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 }
