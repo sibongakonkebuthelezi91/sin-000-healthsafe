@@ -50,6 +50,10 @@ public class DataRetrieval {
 
     public static void department(Context ctx){
         String data = getData();
+        if(data == null) {
+            ctx.status(404).json("No data");
+            return;
+        }
         try{
             JsonNode[] allDepartments = json.readValue(data, JsonNode[].class);
             List<String> departments = new ArrayList<>();
