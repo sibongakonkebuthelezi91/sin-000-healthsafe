@@ -53,9 +53,12 @@ public class DataRetrieval {
         try{
             JsonNode[] allDepartments = json.readValue(data, JsonNode[].class);
             List<String> departments = new ArrayList<>();
-
+            for(JsonNode department: allDepartments){
+                departments.add(department.get("department").asText());
+            }
+            ctx.status(200).json(departments);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            ctx.status(400).result("Bad request");
         }
     }
 }
