@@ -9,7 +9,7 @@ public class WardServiceApp {
 
         app.get("/health", ctx -> ctx.result("OK"));
         app.get("/ward/{id}", DataRetrieval::ward);
-        app.get("/ward/departments", DataRetrieval::ward);
+        app.get("/departments", DataRetrieval::department);
         // TODO (Provides lists of wards and departments.)
         // Add domain endpoints for ward-service here.
 

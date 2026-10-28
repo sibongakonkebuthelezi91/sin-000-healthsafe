@@ -9,8 +9,6 @@ public class StaffingServiceApp {
         Javalin app = Javalin.create().start(7033);
 
         app.get("/health", ctx -> ctx.result("OK"));
-        WardData.getWard("w-01");
-        MqConfig.publishStaffEvents("Hi");
         // TODO (Provides on-call schedules for doctors based on ward and status.)
         // Add domain endpoints for staffing-service here.
     }

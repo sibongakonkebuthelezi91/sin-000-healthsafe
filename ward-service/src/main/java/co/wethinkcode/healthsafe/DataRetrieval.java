@@ -28,6 +28,7 @@ public class DataRetrieval {
 
     public static void ward(Context ctx){
         String data = getData();
+//        System.out.println(data);
         try {
             JsonNode[] allWards = json.readValue(data, JsonNode[].class);
             if (allWards == null) {
@@ -50,6 +51,7 @@ public class DataRetrieval {
 
     public static void department(Context ctx){
         String data = getData();
+
         if(data == null) {
             ctx.status(404).json("No data");
             return;
@@ -58,7 +60,7 @@ public class DataRetrieval {
             JsonNode[] allDepartments = json.readValue(data, JsonNode[].class);
             List<String> departments = new ArrayList<>();
             for(JsonNode department: allDepartments){
-                departments.add(department.get("department").asText());
+                if(!departments.contains(department.get("department").asText())) departments.add(department.get("department").asText());
             }
             ctx.status(200).json(departments);
         } catch (JsonProcessingException e) {
