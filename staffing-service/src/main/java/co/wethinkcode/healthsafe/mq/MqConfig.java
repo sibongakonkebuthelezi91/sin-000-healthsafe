@@ -1,9 +1,5 @@
 package co.wethinkcode.healthsafe.mq;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
@@ -19,7 +15,6 @@ public final class MqConfig {
     public static final String TOPIC = "staffing-events-topic";
     public static final ConnectionFactory CONNECTION_FACTORY = new ActiveMQConnectionFactory(BROKER_URL);
     public static Session session;
-    private static ObjectMapper mapper = new ObjectMapper();
 
     private MqConfig() {
     }
@@ -36,6 +31,7 @@ public final class MqConfig {
     }
 
     public static void publishStaffEvents(String eventPayload){
+        connect();
         if(session == null){
             System.out.println("Session is null");
             return;
