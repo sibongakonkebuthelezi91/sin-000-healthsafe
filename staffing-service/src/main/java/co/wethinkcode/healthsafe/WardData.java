@@ -7,10 +7,7 @@ import java.io.*;
 import java.net.*;
 import java.net.http.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WardData {
 
@@ -113,5 +110,15 @@ public class WardData {
             information.put(keys[x].toLowerCase().trim(), doctor[x].toLowerCase().trim());
         }
         return information;
+    }
+
+    private String[] drChoice(int noDoctor, List<String> doctorsInDepartment){
+        String[] doctors = new String[noDoctor];
+        for(int x = 0; x < doctors.length; x++){
+            Random choice = new Random();
+            int index = choice.nextInt(doctorsInDepartment.size());
+            doctors[x] = doctorsInDepartment.get(index);
+        }
+        return doctors;
     }
 }
