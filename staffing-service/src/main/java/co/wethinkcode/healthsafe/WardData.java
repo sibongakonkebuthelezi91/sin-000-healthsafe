@@ -65,7 +65,8 @@ public class WardData {
         try{
             int level = neededDoctors(alertLevel.asInt());
             List<Map<String, String>> doctors = Doctors();
-
+            assert doctors != null;
+            String[] doctorsAvailable = chosenDoctors(level, doctors, ward.get("department").asText());
 
         }catch (NumberFormatException e){
             System.out.println("Invalid alert level: " + alertLevel.get("level").asText());
@@ -77,7 +78,7 @@ public class WardData {
         return baseDoctors + (alertLevel - 1);
     }
 
-    private static String[] doctors(int noDoctors, List<Map<String, String>> doctors, String department){
+    private static String[] chosenDoctors(int noDoctors, List<Map<String, String>> doctors, String department){
         List<String> drDepartment = new ArrayList<>();
         for(Map<String, String> doctor: doctors){
             if(doctor.get("department").equalsIgnoreCase(department)){
