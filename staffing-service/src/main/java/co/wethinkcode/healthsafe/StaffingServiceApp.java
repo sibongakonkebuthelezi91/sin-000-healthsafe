@@ -1,5 +1,6 @@
 package co.wethinkcode.healthsafe;
 
+import co.wethinkcode.healthsafe.mq.MqConfig;
 import io.javalin.Javalin;
 
 public class StaffingServiceApp {
@@ -9,6 +10,9 @@ public class StaffingServiceApp {
 
         app.get("/health", ctx -> ctx.result("OK"));
         // TODO (Provides on-call schedules for doctors based on ward and status.)
+        app.events(eventListener -> {
+//            eventListener.serverStopping(MqConfig::cl);
+        })
         // Add domain endpoints for staffing-service here.
         WardData.schedule("w-01");
     }

@@ -125,6 +125,7 @@ public class WardData {
         for(int x = 0; x < doctors.length; x++){
             int index =  new Random().nextInt(doctorsInDepartment.size());
             doctors[x] = doctorsInDepartment.get(index);
+            doctorsInDepartment.remove(index);
         }
         return doctors;
     }
