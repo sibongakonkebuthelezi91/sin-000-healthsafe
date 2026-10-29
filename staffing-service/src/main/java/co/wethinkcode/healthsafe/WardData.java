@@ -59,7 +59,8 @@ public class WardData {
 
     public static void schedule(String wardId){
         JsonNode ward = getWard(wardId);
-        if(ward.get("beds_available").asText().equalsIgnoreCase("null")) {
+        JsonNode bedsNode = ward.get("beds_available");
+        if(bedsNode == null|| bedsNode.asText().equalsIgnoreCase("null")) {
             System.out.println("No beds available at ward: " + ward.get("ward_id").asText());
             return;
         }
