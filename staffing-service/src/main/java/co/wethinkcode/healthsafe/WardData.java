@@ -1,5 +1,7 @@
 package co.wethinkcode.healthsafe;
 
+import co.wethinkcode.healthsafe.mq.MqConfig;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvException;
@@ -39,8 +41,8 @@ public class WardData {
         return getRequest(url);
     }
 
-    private static List<Map<String, String>> Doctors(){
-        InputStream inputData = StaffingServiceApp.class.getClassLoader().getResourceAsStream("doctors.json");
+    public static List<Map<String, String>> Doctors(){
+        InputStream inputData = StaffingServiceApp.class.getClassLoader().getResourceAsStream("doctors.csv");
         if(inputData == null){
             System.out.println("doctors.json not found");
             return null;
@@ -67,12 +69,20 @@ public class WardData {
             List<Map<String, String>> doctors = Doctors();
             assert doctors != null;
             String[] doctorsAvailable = chosenDoctors(level, doctors, ward.get("department").asText());
-
+            schedule appoinment = new schedule(doctorsAvailable,
+                    level,
+                    ward.get("department").asText(),
+                    ward.get("ward_id").asText());
+            String schedulePayload = mapper.writeValueAsString(appoinment);
+            MqConfig.publishStaffEvents(schedulePayload);
         }catch (NumberFormatException e){
             System.out.println("Invalid alert level: " + alertLevel.get("level").asText());
+        } catch (JsonProcessingException e) {
+            System.out.println("could not serialize json");
         }
 
     }
+
 
     private static int neededDoctors(int alertLevel){
         return baseDoctors + (alertLevel - 1);
