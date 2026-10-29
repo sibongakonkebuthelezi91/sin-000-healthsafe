@@ -91,6 +91,7 @@ public class WardData {
                 drDepartment.add(doctor.get("full_name"));
             }
         }
+        return allDoctors;
     }
 
     private static List<Map<String, String>> doctorInformation(List<String[]> doctors){
