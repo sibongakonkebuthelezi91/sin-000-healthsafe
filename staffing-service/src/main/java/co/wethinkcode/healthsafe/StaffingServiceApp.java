@@ -1,6 +1,5 @@
 package co.wethinkcode.healthsafe;
 
-import co.wethinkcode.healthsafe.mq.MqConfig;
 import io.javalin.Javalin;
 
 public class StaffingServiceApp {
