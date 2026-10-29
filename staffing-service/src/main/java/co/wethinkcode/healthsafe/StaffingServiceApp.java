@@ -11,8 +11,9 @@ public class StaffingServiceApp {
         app.get("/health", ctx -> ctx.result("OK"));
         // TODO (Provides on-call schedules for doctors based on ward and status.)
         app.events(eventListener -> {
-//            eventListener.serverStopping(MqConfig::cl);
-        })
+            eventListener.serverStopping(MqConfig::close);
+        });
+
         // Add domain endpoints for staffing-service here.
         WardData.schedule("w-01");
     }

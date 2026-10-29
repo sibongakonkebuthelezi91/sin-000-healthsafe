@@ -15,12 +15,12 @@ public final class MqConfig {
     public static final String TOPIC = "staffing-events-topic";
     public static final ConnectionFactory CONNECTION_FACTORY = new ActiveMQConnectionFactory(BROKER_URL);
     public static Session session;
+    private static Connection connect;
 
     private MqConfig() {
     }
 
-    public static void connect(){
-        Connection connect;
+    public static synchronized void connect(){
         try {
             connect = CONNECTION_FACTORY.createConnection();
             connect.start();
@@ -45,6 +45,17 @@ public final class MqConfig {
             }
         } catch (JMSException e) {
             System.out.println("Refused to publish");
+        }
+    }
+
+    public static synchronized void close(){
+        if(connect != null){
+            try{
+                connect.close();
+                connect = null;
+            } catch (JMSException e) {
+                System.out.println("Refused to close");
+            }
         }
     }
 }

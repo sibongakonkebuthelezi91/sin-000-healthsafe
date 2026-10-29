@@ -1,5 +1,6 @@
 package co.wethinkcode.healthsafe.mq;
 
+import co.wethinkcode.healthsafe.EquipmentFailurePayload;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,7 +36,7 @@ public final class MqConfig {
         try{
         connection = connectionFactory.createConnection();
         connection.start();
-        session = connection.createSession(Session.AUTO_ACKNOWLEDGE);
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
         } catch (JMSException e) {
             throw new RuntimeException(e);
@@ -52,14 +53,18 @@ public final class MqConfig {
         }
     }
 
-    public static void publishEquipmentFailure(){
+    public static void publishEquipmentFailure(EquipmentFailurePayload payload){
         // sending to our broker when a system fails
         try{
             Destination destination = session.createQueue(MqConfig.QUEUE);
-            MessageProducer produce = session.createProducer(destination);
+            try(MessageProducer produce = session.createProducer(destination)){
             produce.setDeliveryMode(DeliveryMode.PERSISTENT);
-        } catch (JMSException e) {
-            System.out.println("Could not parse queue");
+            String json = jackson.writeValueAsString(payload);
+            TextMessage message = session.createTextMessage(json);
+            produce.send(message);
+            System.out.println("Message sent");}
+        } catch (Exception e) {
+            System.out.println("Could not publish payload");
         }
     }
 
@@ -78,5 +83,19 @@ public final class MqConfig {
                 System.out.println("Could not parse Json");
             }
         }
+    }
+
+    public static void close(){
+
+            try{
+                if(session != null) session.close();
+                if(connection != null){
+                connection.close();
+                connection = null;
+                }
+                System.out.println("ActiveMQ Connection gracefully closed.");
+            } catch (JMSException e) {
+                System.err.println("Could not close ActiveMQ Connection");
+            }
     }
 }

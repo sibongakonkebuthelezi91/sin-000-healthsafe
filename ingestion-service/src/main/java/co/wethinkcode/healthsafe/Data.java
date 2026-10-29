@@ -17,9 +17,12 @@ public class Data {
             System.out.println("File not found");
             return;
         }
+        System.out.println("Recieved request");
+        System.out.println("collecting data.....");
         try(CSVReader readData = new CSVReader(new InputStreamReader(inputData))){
             List<String[]> data = readData.readAll();
             ctx.json(dataCleaner(data));
+            System.out.println("Status:  " + ctx.status() + "\nData sent");
         } catch (Exception e) {
             ctx.status(400).json("Could not retrieve data");
             return;
