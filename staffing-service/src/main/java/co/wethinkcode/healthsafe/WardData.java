@@ -20,27 +20,23 @@ public class WardData {
     public static JsonNode getWard(String wardId) {
         String encoded = URLEncoder.encode(wardId, StandardCharsets.UTF_8);
         String url = "http://localhost:7031/ward/" + encoded;
-        try {
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().build();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-           return mapper.readValue(response.body(), JsonNode.class);
-        } catch (IOException | InterruptedException e) {
-            return null;
-        }
+        return getRequest(url);
 
     }
 
-    public static JsonNode getStatus(){
-        String url = "http://localhost:7032/alert-level";
+    private static JsonNode getRequest(String url){
         try{
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-           return mapper.readValue(response.body(), JsonNode.class);
+            return mapper.readValue(response.body(), JsonNode.class);
         }catch (IOException | InterruptedException e){
             return null;
         }
+    }
+    public static JsonNode getStatus(){
+        String url = "http://localhost:7032/alert-level";
+        return getRequest(url);
     }
 
     private static List<Map<String, String>> Doctors(){
@@ -68,6 +64,7 @@ public class WardData {
         JsonNode alertLevel = getStatus();
         try{
             int level = neededDoctors(alertLevel.asInt());
+            List<Map<String, String>> doctors = Doctors();
 
 
         }catch (NumberFormatException e){
@@ -81,14 +78,13 @@ public class WardData {
     }
 
     private static String[] doctors(int noDoctors, List<Map<String, String>> doctors, String department){
-        String[] allDoctors = new String[noDoctors];
         List<String> drDepartment = new ArrayList<>();
         for(Map<String, String> doctor: doctors){
             if(doctor.get("department").equalsIgnoreCase(department)){
                 drDepartment.add(doctor.get("full_name"));
             }
         }
-        return allDoctors;
+        return drChoice(noDoctors, drDepartment);
     }
 
     private static List<Map<String, String>> doctorInformation(List<String[]> doctors){
@@ -112,11 +108,10 @@ public class WardData {
         return information;
     }
 
-    private String[] drChoice(int noDoctor, List<String> doctorsInDepartment){
+    private static String[] drChoice(int noDoctor, List<String> doctorsInDepartment){
         String[] doctors = new String[noDoctor];
         for(int x = 0; x < doctors.length; x++){
-            Random choice = new Random();
-            int index = choice.nextInt(doctorsInDepartment.size());
+            int index =  new Random().nextInt(doctorsInDepartment.size());
             doctors[x] = doctorsInDepartment.get(index);
         }
         return doctors;
